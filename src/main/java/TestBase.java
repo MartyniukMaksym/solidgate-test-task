@@ -32,12 +32,13 @@ public class TestBase {
      */
     @Step
     public void setUpCredentials() {
+
+        log.info("Getting secrets for authentication.");
         publicKey = System.getProperty(PUBLIC_KEY.name());
         if (StringUtils.isEmpty(publicKey)) {
             String envPK = System.getenv(PUBLIC_KEY.name());
             if (StringUtils.isEmpty(envPK)) {
-                System.out.println("error");
-                throw new RuntimeException("error");
+                throw new RuntimeException("PUBLIC_KEY is missing in env/properties variables.");
             }
             publicKey = envPK;
         }
@@ -46,8 +47,7 @@ public class TestBase {
         if (StringUtils.isEmpty(secretKey)) {
             String envSK = System.getenv(SECRET_KEY.name());
             if (StringUtils.isEmpty(envSK)) {
-                System.out.println("error");
-                throw new RuntimeException("error 1");
+                throw new RuntimeException("SECRET_KEY is missing in env/properties variables.");
             }
             secretKey = envSK;
         }
@@ -58,6 +58,8 @@ public class TestBase {
      */
     @Step
     public void setUpBrowserConfig() {
+
+        log.info("Setting up browser configs for testing.");
         Configuration.browser = "chrome";
         Configuration.browserSize = "1400x900";
         Configuration.pageLoadStrategy = "eager";

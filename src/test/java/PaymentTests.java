@@ -39,6 +39,7 @@ public class PaymentTests extends TestBase {
         requestBody.getOrder().setOrderId(testOrderId);
         requestBody.getOrder().setCurrency(testCurrency);
 
+        log.info("Getting created payment page response.");
         var paymentPageResponse = createPaymentPage(requestBody);
         var paymentPageUrl = paymentPageResponse.getUrl();
 
@@ -56,10 +57,11 @@ public class PaymentTests extends TestBase {
     @Test(dependsOnMethods = "cretePaymentPageTest")
     public void checkOrderStatusTest() {
 
+        log.info("Creating order status request body.");
         OrderStatusRequestBody orderStatusRequestBody = new OrderStatusRequestBody();
         orderStatusRequestBody.setOrderId(testOrderId);
 
-        log.info("Creating order status request body.");
+        log.info("Getting order status response.");
         var orderStatusResponse = getOrderStatus(orderStatusRequestBody);
         var orderAmount = orderStatusResponse.getOrder().getAmount();
         var orderCurrency = orderStatusResponse.getOrder().getCurrency();
