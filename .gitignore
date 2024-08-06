@@ -1,0 +1,15 @@
+# Node artifact files
+node_modules/
+dist/
+allure-results/
+allure-report/
+build/
+target/
+.idea/
+.gradle/
+parameters.yml
+
+# Compiled Java class files
+*.class
+
+**/target/
