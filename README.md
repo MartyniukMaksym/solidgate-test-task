@@ -25,3 +25,12 @@ To run the tests from the terminal, use the following command with your credenti
 
 ```sh
 PUBLIC_KEY={public_key} SECRET_KEY={secret_key} gradle clean allTests
+```
+
+#### Viewing Allure Reports
+
+To generate and view the Allure report after running the tests, use the following commands:
+```sh
+allure generate -c
+allure serve ./build/allure-results/
+```
