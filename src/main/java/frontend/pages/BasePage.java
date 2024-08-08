@@ -21,8 +21,8 @@ public class BasePage {
     public static void waitWhileLoaderDisappears() {
 
         log.info("Waiting while loader disappears.");
-        if ($(loader).isDisplayed()) {
-            $(loader).shouldBe(Condition.disappear, Duration.ofSeconds(20));
+        if (loader.isDisplayed()) {
+            loader.shouldBe(Condition.disappear, Duration.ofSeconds(20));
         }
     }
 }

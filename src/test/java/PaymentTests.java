@@ -10,6 +10,7 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static globalEntities.enums.TransactionStatus.SUCCESS;
+import static globalUtils.CurrencyHelper.getCurrencySymbolByCurrencyCode;
 
 
 @Log
@@ -31,6 +32,7 @@ public class PaymentTests extends TestBase {
         testOrderId = UUID.randomUUID().toString();
         testAmount = 1299;
         testCurrency = "EUR";
+        var testCurrencySymbol = getCurrencySymbolByCurrencyCode(testCurrency);
 
         log.info("Creating Payment page request body.");
         CreatePaymentPageRequestBody requestBody = CreatePaymentPageRequestBody.setDefaultValuesFromJson();
@@ -52,6 +54,8 @@ public class PaymentTests extends TestBase {
         log.info("Asserting test results.");
         Assert.assertEquals(trimPrice(displayedPrice), testAmount,
                 "Amount on UI mismatch expectations.");
+        Assert.assertEquals(getCurrencySymbol(displayedPrice), testCurrencySymbol,
+                "Currency on UI mismatch expectations.");
     }
 
     @Test(dependsOnMethods = "cretePaymentPageTest")
@@ -84,5 +88,9 @@ public class PaymentTests extends TestBase {
         String priceWithoutSymbol = price.substring(1);
         String cleanedPrice = priceWithoutSymbol.replace(".", "");
         return Integer.parseInt(cleanedPrice);
+    }
+
+    private String getCurrencySymbol(String rawPrice) {
+        return String.valueOf(rawPrice.charAt(0));
     }
 }
