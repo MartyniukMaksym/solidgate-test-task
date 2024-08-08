@@ -1,3 +1,5 @@
+import backend.requests.CreatePaymentPageRequest;
+import backend.requests.GetOrderStatusRequest;
 import backend.requests.entities.CreatePaymentPageRequestBody;
 import backend.requests.entities.OrderStatusRequestBody;
 import frontend.pages.PaymentPage;
@@ -40,7 +42,9 @@ public class PaymentTests extends TestBase {
         requestBody.getOrder().setCurrency(testCurrency);
 
         log.info("Getting created payment page response.");
-        var paymentPageResponse = createPaymentPage(requestBody);
+        var paymentPageRequest = new CreatePaymentPageRequest(env);
+        var paymentPageResponse = paymentPageRequest.createPaymentPage(requestBody);
+
         var paymentPageUrl = paymentPageResponse.getUrl();
 
         paymentPage.openPaymentPage(paymentPageUrl);
@@ -62,7 +66,9 @@ public class PaymentTests extends TestBase {
         orderStatusRequestBody.setOrderId(testOrderId);
 
         log.info("Getting order status response.");
-        var orderStatusResponse = getOrderStatus(orderStatusRequestBody);
+        var orderStatusRequest = new GetOrderStatusRequest(env);
+        var orderStatusResponse = orderStatusRequest.getOrderStatus(orderStatusRequestBody);
+
         var orderAmount = orderStatusResponse.getOrder().getAmount();
         var orderCurrency = orderStatusResponse.getOrder().getCurrency();
 
