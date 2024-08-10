@@ -80,7 +80,6 @@ public class PaymentTests extends TestBase {
 
         log.info("Getting order status response.");
         var orderStatusRequest = new GetOrderStatusRequest(env);
-
         var orderStatusResponse = orderStatusRequest.getOrderStatus(orderStatusRequestBody);
 
         var orderAmount = orderStatusResponse.getOrder().getAmount();

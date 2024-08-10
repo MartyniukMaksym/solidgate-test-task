@@ -21,10 +21,14 @@ public class Environment {
         this.environmentName = env;
     }
 
+    /**
+     * Method will setUp all environment variables.
+     */
     public void setUpEnvironment() {
 
         setUpCredentials();
 
+        log.info("Setting up URLs according to environment.");
         switch (environmentName) {
             case "dev":
                 PAYMENT_PAGE_URL = "https://payment-page.solidgate.com/api/v1/init";
@@ -44,7 +48,7 @@ public class Environment {
     @Step
     private void setUpCredentials() {
 
-        log.info("Getting secrets for authentication.");
+        log.info("Getting public key for authentication.");
         PUBLIC_KEY = System.getProperty(EnvVariables.PUBLIC_KEY.name());
         if (StringUtils.isEmpty(PUBLIC_KEY)) {
             String envPK = System.getenv(EnvVariables.PUBLIC_KEY.name());
@@ -54,6 +58,7 @@ public class Environment {
             PUBLIC_KEY = envPK;
         }
 
+        log.info("Getting secret key for authentication.");
         SECRET_KEY = System.getProperty(EnvVariables.SECRET_KEY.name());
         if (StringUtils.isEmpty(SECRET_KEY)) {
             String envSK = System.getenv(EnvVariables.SECRET_KEY.name());
