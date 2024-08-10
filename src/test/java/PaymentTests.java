@@ -2,6 +2,7 @@ import backend.requests.CreatePaymentPageRequest;
 import backend.requests.GetOrderStatusRequest;
 import backend.requests.entities.CreatePaymentPageRequestBody;
 import backend.requests.entities.OrderStatusRequestBody;
+import backend.requests.entities.basic.Order;
 import frontend.pages.PaymentPage;
 import lombok.extern.java.Log;
 import org.testng.Assert;
@@ -36,12 +37,18 @@ public class PaymentTests extends TestBase {
         testCurrency = "EUR";
         var testCurrencySymbol = getCurrencySymbolByCurrencyCode(testCurrency);
 
-        log.info("Creating Payment page request body.");
-        CreatePaymentPageRequestBody requestBody = CreatePaymentPageRequestBody.setDefaultValuesFromJson();
+        log.info("Creating order entity for testing.");
+        Order order = Order.builderWithDefaults()
+                .orderId(testOrderId)
+                .amount(testAmount)
+                .currency(testCurrency)
+                .build();
 
-        requestBody.getOrder().setAmount(testAmount);
-        requestBody.getOrder().setOrderId(testOrderId);
-        requestBody.getOrder().setCurrency(testCurrency);
+        log.info("Creating Payment page request body.");
+        var requestBody = CreatePaymentPageRequestBody
+                .builderWithDefaults()
+                .order(order)
+                .build();
 
         log.info("Getting created payment page response.");
         var paymentPageRequest = new CreatePaymentPageRequest(env);
@@ -66,11 +73,14 @@ public class PaymentTests extends TestBase {
     public void checkOrderStatusTest() {
 
         log.info("Creating order status request body.");
-        OrderStatusRequestBody orderStatusRequestBody = new OrderStatusRequestBody();
-        orderStatusRequestBody.setOrderId(testOrderId);
+        var orderStatusRequestBody = OrderStatusRequestBody
+                .builderWithDefaults()
+                .orderId(testOrderId)
+                .build();
 
         log.info("Getting order status response.");
         var orderStatusRequest = new GetOrderStatusRequest(env);
+
         var orderStatusResponse = orderStatusRequest.getOrderStatus(orderStatusRequestBody);
 
         var orderAmount = orderStatusResponse.getOrder().getAmount();
