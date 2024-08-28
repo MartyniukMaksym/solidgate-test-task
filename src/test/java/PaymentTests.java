@@ -1,5 +1,8 @@
+import backend.requests.CreatePaymentPageRequest;
+import backend.requests.GetOrderStatusRequest;
 import backend.requests.entities.CreatePaymentPageRequestBody;
 import backend.requests.entities.OrderStatusRequestBody;
+import backend.requests.entities.basic.Order;
 import frontend.pages.PaymentPage;
 import lombok.extern.java.Log;
 import org.testng.Assert;
@@ -10,6 +13,7 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static globalEntities.enums.TransactionStatus.SUCCESS;
+import static globalUtils.CurrencyHelper.getCurrencySymbolByCurrencyCode;
 
 
 @Log
@@ -31,16 +35,25 @@ public class PaymentTests extends TestBase {
         testOrderId = UUID.randomUUID().toString();
         testAmount = 1299;
         testCurrency = "EUR";
+        var testCurrencySymbol = getCurrencySymbolByCurrencyCode(testCurrency);
+
+        log.info("Creating order entity for testing.");
+        Order order = Order.builderWithDefaults()
+                .orderId(testOrderId)
+                .amount(testAmount)
+                .currency(testCurrency)
+                .build();
 
         log.info("Creating Payment page request body.");
-        CreatePaymentPageRequestBody requestBody = CreatePaymentPageRequestBody.setDefaultValuesFromJson();
-
-        requestBody.getOrder().setAmount(testAmount);
-        requestBody.getOrder().setOrderId(testOrderId);
-        requestBody.getOrder().setCurrency(testCurrency);
+        var requestBody = CreatePaymentPageRequestBody
+                .builderWithDefaults()
+                .order(order)
+                .build();
 
         log.info("Getting created payment page response.");
-        var paymentPageResponse = createPaymentPage(requestBody);
+        var paymentPageRequest = new CreatePaymentPageRequest(env);
+        var paymentPageResponse = paymentPageRequest.createPaymentPage(requestBody);
+
         var paymentPageUrl = paymentPageResponse.getUrl();
 
         paymentPage.openPaymentPage(paymentPageUrl);
@@ -52,17 +65,23 @@ public class PaymentTests extends TestBase {
         log.info("Asserting test results.");
         Assert.assertEquals(trimPrice(displayedPrice), testAmount,
                 "Amount on UI mismatch expectations.");
+        Assert.assertEquals(getCurrencySymbol(displayedPrice), testCurrencySymbol,
+                "Currency on UI mismatch expectations.");
     }
 
     @Test(dependsOnMethods = "cretePaymentPageTest")
     public void checkOrderStatusTest() {
 
         log.info("Creating order status request body.");
-        OrderStatusRequestBody orderStatusRequestBody = new OrderStatusRequestBody();
-        orderStatusRequestBody.setOrderId(testOrderId);
+        var orderStatusRequestBody = OrderStatusRequestBody
+                .builderWithDefaults()
+                .orderId(testOrderId)
+                .build();
 
         log.info("Getting order status response.");
-        var orderStatusResponse = getOrderStatus(orderStatusRequestBody);
+        var orderStatusRequest = new GetOrderStatusRequest(env);
+        var orderStatusResponse = orderStatusRequest.getOrderStatus(orderStatusRequestBody);
+
         var orderAmount = orderStatusResponse.getOrder().getAmount();
         var orderCurrency = orderStatusResponse.getOrder().getCurrency();
 
@@ -84,5 +103,9 @@ public class PaymentTests extends TestBase {
         String priceWithoutSymbol = price.substring(1);
         String cleanedPrice = priceWithoutSymbol.replace(".", "");
         return Integer.parseInt(cleanedPrice);
+    }
+
+    private String getCurrencySymbol(String rawPrice) {
+        return String.valueOf(rawPrice.charAt(0));
     }
 }
