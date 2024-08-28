@@ -32,6 +32,8 @@ public class PaymentTests extends TestBase {
     @Test
     public void cretePaymentPageTest() {
 
+        String aaa="new";
+
         testOrderId = UUID.randomUUID().toString();
         testAmount = 1299;
         testCurrency = "EUR";
